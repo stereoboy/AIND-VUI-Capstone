@@ -55,7 +55,7 @@ def cnn_rnn_model(input_dim, filters, kernel_size, conv_stride,
     # Add batch normalization
     bn_cnn = BatchNormalization(name='bn_conv_1d')(conv_1d)
     # Add a recurrent layer
-    simp_rnn = SimpleRNN(units, activation='relu',
+    simp_rnn = GRU(units, activation='relu',
         return_sequences=True, implementation=2, name='rnn')(bn_cnn)
     # TODO: Add batch normalization
     bn_rnn = BatchNormalization()(simp_rnn)
@@ -133,18 +133,33 @@ def bidirectional_rnn_model(input_dim, units, output_dim=29):
     print(model.summary())
     return model
 
-def final_model():
+def final_model(input_dim, filters, kernel_size, conv_stride,
+    conv_border_mode, units, recur_layers, output_dim=29):
     """ Build a deep network for speech 
     """
     # Main acoustic input
     input_data = Input(name='the_input', shape=(None, input_dim))
-    # TODO: Specify the layers in your network
-    ...
-    # TODO: Add softmax activation layer
-    y_pred = ...
+    # Add convolutional layer
+    conv_1d = Conv1D(filters, kernel_size, 
+                     strides=conv_stride, 
+                     padding=conv_border_mode,
+                     activation='relu',
+                     name='conv1d')(input_data)
+    # Add batch normalization
+    bn_cnn = BatchNormalization(name='bn_conv_1d')(conv_1d)
+    # Add a recurrent layer
+    in_rnn = bn_cnn
+    for i in range(recur_layers):
+        simp_rnn = GRU(units, activation='relu',
+            return_sequences=True, implementation=2, name='rnn-{}'.format(i))(in_rnn)
+        bn_rnn = BatchNormalization()(simp_rnn)
+        in_rnn = bn_rnn
+    time_dense = TimeDistributed(Dense(output_dim))(bn_rnn)
+    # Add softmax activation layer
+    y_pred = Activation('softmax', name='softmax')(time_dense)
     # Specify the model
     model = Model(inputs=input_data, outputs=y_pred)
-    # TODO: Specify model.output_length
-    model.output_length = ...
+    model.output_length = lambda x: cnn_output_length(
+        x, kernel_size, conv_border_mode, conv_stride)
     print(model.summary())
     return model

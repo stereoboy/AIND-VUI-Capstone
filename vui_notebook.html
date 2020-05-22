@@ -14427,7 +14427,12 @@ Epoch 20/20
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Question 1:</strong> Use the plot above to analyze the performance of each of the attempted architectures.  Which performs best?  Provide an explanation regarding why you think some models perform better than others.</p>
-<p><strong>Answer:</strong></p>
+<p><strong>Answer:</strong> If <code>rnn_model</code> is set as the baseline for this project...</p>
+<ul>
+<li><code>cnn_rnn_model</code> shows better performance in training_loss but it overfitted after epoch 14. More careful tuning can make better result. convolution layer can catch spatial features for example salient pulses.</li>
+<li><code>deep_rnn_model</code> shows better in training_loss and validation_loss without overfitting. It means that it is possible to get better result with more training. Generally deep layer has more flexibilty. So it increase performance.</li>
+<li><code>bidirectional_rnn_model</code> shows slow training process and underperforms. Generally said bidirectional rnn increases performance of the temporal sequence problem. </li>
+</ul>
 
 </div>
 </div>
@@ -14459,7 +14464,7 @@ Epoch 20/20
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="prompt input_prompt">In&nbsp;[29]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># specify the model</span>
@@ -14468,7 +14473,7 @@ Epoch 20/20
                         <span class="n">kernel_size</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> 
                         <span class="n">conv_stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
                         <span class="n">conv_border_mode</span><span class="o">=</span><span class="s1">&#39;valid&#39;</span><span class="p">,</span>
-                        <span class="n">units</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                        <span class="n">units</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
                         <span class="n">recur_layers</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 
@@ -14495,21 +14500,25 @@ conv1d (Conv1D)              (None, None, 200)         354400
 _________________________________________________________________
 bn_conv_1d (BatchNormalizati (None, None, 200)         800       
 _________________________________________________________________
-rnn-0 (GRU)                  (None, None, 100)         90300     
+rnn-0 (GRU)                  (None, None, 50)          37650     
 _________________________________________________________________
-batch_normalization_3 (Batch (None, None, 100)         400       
+batch_normalization_14 (Batc (None, None, 50)          200       
 _________________________________________________________________
-rnn-1 (GRU)                  (None, None, 100)         60300     
+rnn-1 (GRU)                  (None, None, 50)          15150     
 _________________________________________________________________
-batch_normalization_4 (Batch (None, None, 100)         400       
+batch_normalization_15 (Batc (None, None, 50)          200       
 _________________________________________________________________
-time_distributed_9 (TimeDist (None, None, 29)          2929      
+rnn-2 (GRU)                  (None, None, 50)          15150     
+_________________________________________________________________
+batch_normalization_16 (Batc (None, None, 50)          200       
+_________________________________________________________________
+time_distributed_14 (TimeDis (None, None, 29)          1479      
 _________________________________________________________________
 softmax (Activation)         (None, None, 29)          0         
 =================================================================
-Total params: 509,529
-Trainable params: 508,729
-Non-trainable params: 800
+Total params: 425,229
+Trainable params: 424,529
+Non-trainable params: 700
 _________________________________________________________________
 None
 </pre>
@@ -14530,7 +14539,7 @@ None
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="prompt input_prompt">In&nbsp;[30]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">train_model</span><span class="p">(</span><span class="n">input_to_softmax</span><span class="o">=</span><span class="n">model_end</span><span class="p">,</span>
@@ -14554,45 +14563,45 @@ None
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Epoch 1/20
-106/106 [==============================] - 72s 678ms/step - loss: 227.9590 - val_loss: 203.0783
+106/106 [==============================] - 106s 996ms/step - loss: 233.8725 - val_loss: 201.7583
 Epoch 2/20
-106/106 [==============================] - 70s 662ms/step - loss: 169.0872 - val_loss: 156.5219
+106/106 [==============================] - 101s 957ms/step - loss: 171.2809 - val_loss: 166.7838
 Epoch 3/20
-106/106 [==============================] - 69s 653ms/step - loss: 144.5029 - val_loss: 142.4047
+106/106 [==============================] - 102s 962ms/step - loss: 148.9890 - val_loss: 151.0387
 Epoch 4/20
-106/106 [==============================] - 70s 657ms/step - loss: 131.4463 - val_loss: 137.8535
+106/106 [==============================] - 101s 953ms/step - loss: 136.8488 - val_loss: 140.2770
 Epoch 5/20
-106/106 [==============================] - 70s 656ms/step - loss: 122.3358 - val_loss: 133.2020
+106/106 [==============================] - 101s 956ms/step - loss: 129.3193 - val_loss: 139.4947
 Epoch 6/20
-106/106 [==============================] - 70s 663ms/step - loss: 115.6162 - val_loss: 132.9180
+106/106 [==============================] - 102s 959ms/step - loss: 122.9029 - val_loss: 137.8228
 Epoch 7/20
-106/106 [==============================] - 71s 669ms/step - loss: 109.9732 - val_loss: 128.2606
+106/106 [==============================] - 101s 956ms/step - loss: 118.6161 - val_loss: 131.6548
 Epoch 8/20
-106/106 [==============================] - 70s 663ms/step - loss: 104.9100 - val_loss: 125.0263
+106/106 [==============================] - 102s 958ms/step - loss: 114.2666 - val_loss: 131.5091
 Epoch 9/20
-106/106 [==============================] - 70s 657ms/step - loss: 100.4697 - val_loss: 124.5080
+106/106 [==============================] - 100s 946ms/step - loss: 110.2694 - val_loss: 131.8203
 Epoch 10/20
-106/106 [==============================] - 70s 660ms/step - loss: 96.2386 - val_loss: 124.9895
+106/106 [==============================] - 101s 952ms/step - loss: 107.1551 - val_loss: 128.7707
 Epoch 11/20
-106/106 [==============================] - 70s 661ms/step - loss: 92.7235 - val_loss: 122.6081
+106/106 [==============================] - 100s 945ms/step - loss: 104.5886 - val_loss: 129.3033
 Epoch 12/20
-106/106 [==============================] - 70s 657ms/step - loss: 89.0610 - val_loss: 124.4597
+106/106 [==============================] - 101s 957ms/step - loss: 101.7937 - val_loss: 126.4202
 Epoch 13/20
-106/106 [==============================] - 70s 656ms/step - loss: 85.2610 - val_loss: 122.9965
+106/106 [==============================] - 101s 954ms/step - loss: 99.2309 - val_loss: 127.1423
 Epoch 14/20
-106/106 [==============================] - 70s 657ms/step - loss: 82.4494 - val_loss: 124.9504
+106/106 [==============================] - 101s 951ms/step - loss: 96.8589 - val_loss: 126.0970
 Epoch 15/20
-106/106 [==============================] - 70s 657ms/step - loss: 78.9940 - val_loss: 128.4039
+106/106 [==============================] - 103s 969ms/step - loss: 94.6229 - val_loss: 125.2466
 Epoch 16/20
-106/106 [==============================] - 70s 656ms/step - loss: 76.5449 - val_loss: 130.6756
+106/106 [==============================] - 102s 964ms/step - loss: 92.6276 - val_loss: 127.3362
 Epoch 17/20
-106/106 [==============================] - 70s 659ms/step - loss: 73.4435 - val_loss: 131.6545
+106/106 [==============================] - 101s 951ms/step - loss: 90.8172 - val_loss: 127.9862
 Epoch 18/20
-106/106 [==============================] - 70s 657ms/step - loss: 71.2701 - val_loss: 130.1567
+106/106 [==============================] - 100s 945ms/step - loss: 88.9313 - val_loss: 127.7733
 Epoch 19/20
-106/106 [==============================] - 70s 663ms/step - loss: 68.7330 - val_loss: 133.0044
+106/106 [==============================] - 101s 952ms/step - loss: 86.8117 - val_loss: 128.3617
 Epoch 20/20
-106/106 [==============================] - 69s 654ms/step - loss: 66.5376 - val_loss: 134.2457
+106/106 [==============================] - 102s 958ms/step - loss: 85.0986 - val_loss: 128.2663
 </pre>
 </div>
 </div>
@@ -14605,7 +14614,7 @@ Epoch 20/20
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Question 2:</strong> Describe your final model architecture and your reasoning at each step.</p>
-<p><strong>Answer:</strong></p>
+<p><strong>Answer:</strong> Adopt 1d cnn as preprocess and stack 3 GRU layer to merge benefits from <code>cnn_rnn_model</code> and <code>deep_rnn_model</code> .</p>
 
 </div>
 </div>
@@ -14621,7 +14630,7 @@ Epoch 20/20
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="prompt input_prompt">In&nbsp;[31]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -14686,7 +14695,7 @@ Epoch 20/20
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[25]:</div>
+<div class="prompt input_prompt">In&nbsp;[34]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">get_predictions</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> 
@@ -14696,8 +14705,8 @@ Epoch 20/20
                         <span class="n">kernel_size</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> 
                         <span class="n">conv_stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
                         <span class="n">conv_border_mode</span><span class="o">=</span><span class="s1">&#39;valid&#39;</span><span class="p">,</span>
-                        <span class="n">units</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-                        <span class="n">recur_layers</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> 
+                        <span class="n">units</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+                        <span class="n">recur_layers</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span> 
                 <span class="n">model_path</span><span class="o">=</span><span class="s1">&#39;results/model_end.h5&#39;</span><span class="p">)</span>
 </pre></div>
 
@@ -14724,54 +14733,35 @@ conv1d (Conv1D)              (None, None, 200)         354400
 _________________________________________________________________
 bn_conv_1d (BatchNormalizati (None, None, 200)         800       
 _________________________________________________________________
-rnn-0 (GRU)                  (None, None, 100)         90300     
+rnn-0 (GRU)                  (None, None, 50)          37650     
 _________________________________________________________________
-batch_normalization_7 (Batch (None, None, 100)         400       
+batch_normalization_21 (Batc (None, None, 50)          200       
 _________________________________________________________________
-rnn-1 (GRU)                  (None, None, 100)         60300     
+rnn-1 (GRU)                  (None, None, 50)          15150     
 _________________________________________________________________
-batch_normalization_8 (Batch (None, None, 100)         400       
+batch_normalization_22 (Batc (None, None, 50)          200       
 _________________________________________________________________
-time_distributed_11 (TimeDis (None, None, 29)          2929      
+rnn-2 (GRU)                  (None, None, 50)          15150     
+_________________________________________________________________
+batch_normalization_23 (Batc (None, None, 50)          200       
+_________________________________________________________________
+time_distributed_17 (TimeDis (None, None, 29)          1479      
 _________________________________________________________________
 softmax (Activation)         (None, None, 29)          0         
 =================================================================
-Total params: 509,529
-Trainable params: 508,729
-Non-trainable params: 800
+Total params: 425,229
+Trainable params: 424,529
+Non-trainable params: 700
 _________________________________________________________________
 None
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>W0522 13:06:41.730557 140199752537920 deprecation.py:323] From /usr/local/lib/python3.6/dist-packages/keras/backend/tensorflow_backend.py:3795: sparse_to_dense (from tensorflow.python.ops.sparse_ops) is deprecated and will be removed in a future version.
-Instructions for updating:
-Create a `tf.sparse.SparseTensor` and use `tf.sparse.to_dense` instead.
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 True transcription:
 
 hugh&#39;s written a delightful part for her and she&#39;s quite inexpressible
 --------------------------------------------------------------------------------
 Predicted transcription:
 
-howhs writ ne delighfull porfor her and shes quit in ixpresable
+hews wret ne tolifupordfor her an she s quit inaxprsibe
 --------------------------------------------------------------------------------
 </pre>
 </div>
@@ -14791,7 +14781,7 @@ howhs writ ne delighfull porfor her and shes quit in ixpresable
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[27]:</div>
+<div class="prompt input_prompt">In&nbsp;[35]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">get_predictions</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> 
@@ -14801,8 +14791,8 @@ howhs writ ne delighfull porfor her and shes quit in ixpresable
                         <span class="n">kernel_size</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> 
                         <span class="n">conv_stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
                         <span class="n">conv_border_mode</span><span class="o">=</span><span class="s1">&#39;valid&#39;</span><span class="p">,</span>
-                        <span class="n">units</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-                        <span class="n">recur_layers</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> 
+                        <span class="n">units</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+                        <span class="n">recur_layers</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span> 
                 <span class="n">model_path</span><span class="o">=</span><span class="s1">&#39;results/model_end.h5&#39;</span><span class="p">)</span>
 </pre></div>
 
@@ -14829,21 +14819,25 @@ conv1d (Conv1D)              (None, None, 200)         354400
 _________________________________________________________________
 bn_conv_1d (BatchNormalizati (None, None, 200)         800       
 _________________________________________________________________
-rnn-0 (GRU)                  (None, None, 100)         90300     
+rnn-0 (GRU)                  (None, None, 50)          37650     
 _________________________________________________________________
-batch_normalization_9 (Batch (None, None, 100)         400       
+batch_normalization_24 (Batc (None, None, 50)          200       
 _________________________________________________________________
-rnn-1 (GRU)                  (None, None, 100)         60300     
+rnn-1 (GRU)                  (None, None, 50)          15150     
 _________________________________________________________________
-batch_normalization_10 (Batc (None, None, 100)         400       
+batch_normalization_25 (Batc (None, None, 50)          200       
 _________________________________________________________________
-time_distributed_12 (TimeDis (None, None, 29)          2929      
+rnn-2 (GRU)                  (None, None, 50)          15150     
+_________________________________________________________________
+batch_normalization_26 (Batc (None, None, 50)          200       
+_________________________________________________________________
+time_distributed_18 (TimeDis (None, None, 29)          1479      
 _________________________________________________________________
 softmax (Activation)         (None, None, 29)          0         
 =================================================================
-Total params: 509,529
-Trainable params: 508,729
-Non-trainable params: 800
+Total params: 425,229
+Trainable params: 424,529
+Non-trainable params: 700
 _________________________________________________________________
 None
 --------------------------------------------------------------------------------
@@ -14853,7 +14847,7 @@ it is sixteen years since john bergson died
 --------------------------------------------------------------------------------
 Predicted transcription:
 
-id he sixtmth es sens chuune darxon dade
+i hisextin asfesconedbarsom diade
 --------------------------------------------------------------------------------
 </pre>
 </div>

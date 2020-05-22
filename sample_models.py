@@ -150,8 +150,8 @@ def final_model(input_dim, filters, kernel_size, conv_stride,
     # Add a recurrent layer
     in_rnn = bn_cnn
     for i in range(recur_layers):
-        simp_rnn = GRU(units, activation='relu',
-            return_sequences=True, implementation=2, name='rnn-{}'.format(i))(in_rnn)
+        simp_rnn = Bidirectional(GRU(units, activation='relu',
+            return_sequences=True, implementation=2, name='rnn-{}'.format(i)))(in_rnn)
         bn_rnn = BatchNormalization()(simp_rnn)
         in_rnn = bn_rnn
     time_dense = TimeDistributed(Dense(output_dim))(bn_rnn)

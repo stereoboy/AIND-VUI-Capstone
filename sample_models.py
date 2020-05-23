@@ -1,7 +1,7 @@
 from keras import backend as K
 from keras.models import Model
 from keras.layers import (BatchNormalization, Conv1D, Dense, Input, 
-    TimeDistributed, Activation, Bidirectional, SimpleRNN, GRU, LSTM)
+    TimeDistributed, Activation, Bidirectional, SimpleRNN, GRU, LSTM, MaxPooling1D)
 
 def simple_rnn_model(input_dim, output_dim=29):
     """ Build a recurrent network for speech 
@@ -142,16 +142,19 @@ def final_model(input_dim, filters, kernel_size, conv_stride,
     # Add convolutional layer
     conv_1d = Conv1D(filters, kernel_size, 
                      strides=conv_stride, 
+                     #dilation_rate=2,
                      padding=conv_border_mode,
                      activation='relu',
                      name='conv1d')(input_data)
     # Add batch normalization
     bn_cnn = BatchNormalization(name='bn_conv_1d')(conv_1d)
+
+    #pool_cnn = MaxPooling1D(pool_size=2, strides=2, padding='valid')(bn_cnn)
     # Add a recurrent layer
     in_rnn = bn_cnn
     for i in range(recur_layers):
         simp_rnn = Bidirectional(GRU(units, activation='relu',
-            return_sequences=True, implementation=2, name='rnn-{}'.format(i)))(in_rnn)
+            return_sequences=True, implementation=2, dropout_W=0.1, dropout_U=0.0, name='rnn-{}'.format(i)))(in_rnn)
         bn_rnn = BatchNormalization()(simp_rnn)
         in_rnn = bn_rnn
     time_dense = TimeDistributed(Dense(output_dim))(bn_rnn)
@@ -159,6 +162,8 @@ def final_model(input_dim, filters, kernel_size, conv_stride,
     y_pred = Activation('softmax', name='softmax')(time_dense)
     # Specify the model
     model = Model(inputs=input_data, outputs=y_pred)
+#    model.output_length = lambda x: cnn_output_length(
+#        x, kernel_size, conv_border_mode, conv_stride, dilation=2)
     model.output_length = lambda x: cnn_output_length(
         x, kernel_size, conv_border_mode, conv_stride)
     print(model.summary())

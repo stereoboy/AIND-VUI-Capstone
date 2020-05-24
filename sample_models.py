@@ -154,7 +154,7 @@ def final_model(input_dim, filters, kernel_size, conv_stride,
     in_rnn = bn_cnn
     for i in range(recur_layers):
         simp_rnn = Bidirectional(GRU(units, activation='relu',
-            return_sequences=True, implementation=2, dropout_W=0.2, dropout_U=0.0, name='rnn-{}'.format(i)))(in_rnn)
+            return_sequences=True, implementation=2, dropout_W=0.3, dropout_U=0.0, name='rnn-{}'.format(i)))(in_rnn)
         bn_rnn = BatchNormalization()(simp_rnn)
         in_rnn = bn_rnn
     time_dense = TimeDistributed(Dense(output_dim))(bn_rnn)
